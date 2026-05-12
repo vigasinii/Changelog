@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Changelog Builder — Dashboard</title>
+  <title>Changelog — Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Outfit:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/css/style.css"/>
 </head>
 <body>
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sb-top">
       <a class="sb-logo" href="/">
-        <div class="sb-logo-mark">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        </div>
-        <span class="sb-logo-text">Changelog</span>
+        <div class="sb-logo-mark">cl</div>
+        <span class="sb-logo-text">changelog<span class="sb-logo-dot"></span></span>
       </a>
 
       <button class="sb-new-btn" id="new-project-btn">
@@ -32,9 +29,9 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main" id="main">
-    <!-- Project list view (default) -->
+
+    <!-- Home -->
     <div id="view-home">
       <div class="topbar">
         <h1 class="topbar-title">All Projects</h1>
@@ -44,19 +41,19 @@
       </div>
     </div>
 
-    <!-- Project detail view -->
+    <!-- Project detail -->
     <div id="view-project" class="hidden">
       <div class="topbar">
         <div class="topbar-left">
           <button class="back-btn" id="back-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             Projects
           </button>
           <h1 class="topbar-title" id="project-name-title">—</h1>
         </div>
         <div class="topbar-right">
           <a class="share-btn" id="share-link" href="#" target="_blank">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             Public page
           </a>
           <button class="btn-primary" id="new-entry-btn">
@@ -70,12 +67,12 @@
       </div>
     </div>
 
-    <!-- Editor view -->
+    <!-- Editor -->
     <div id="view-editor" class="hidden">
       <div class="topbar">
         <div class="topbar-left">
           <button class="back-btn" id="editor-back-btn">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
             <span id="editor-back-label">Back</span>
           </button>
           <h1 class="topbar-title" id="editor-title">New Entry</h1>
@@ -90,10 +87,10 @@
           <div class="editor-row two-col">
             <div class="field">
               <label>Version</label>
-              <input type="text" id="e-version" placeholder="2.0.0" />
+              <input type="text" id="e-version" placeholder="2.0.0"/>
             </div>
             <div class="field">
-              <label>Release type</label>
+              <label>Type</label>
               <select id="e-type">
                 <option value="major">Major</option>
                 <option value="minor" selected>Minor</option>
@@ -104,31 +101,33 @@
           </div>
           <div class="field">
             <label>Title</label>
-            <input type="text" id="e-title" placeholder="What changed?" />
+            <input type="text" id="e-title" placeholder="What changed?"/>
           </div>
           <div class="field">
-            <label>Body <span class="label-hint">markdown supported</span></label>
-            <textarea id="e-body" rows="16" placeholder="## What's new&#10;&#10;- Added **dark mode** support&#10;- Fixed `api/keys` response time&#10;- Improved search performance"></textarea>
+            <label>Body <span class="label-hint">— markdown supported</span></label>
+            <textarea id="e-body" rows="18" placeholder="## What's new&#10;&#10;- Added dark mode&#10;- Fixed `api/keys` latency&#10;- Improved search speed"></textarea>
           </div>
-          <input type="hidden" id="e-id" />
+          <input type="hidden" id="e-id"/>
         </div>
         <div class="editor-preview">
           <div class="preview-header">
             <span class="preview-label">Preview</span>
+            <span class="preview-sublabel">renders as it will appear publicly</span>
           </div>
           <div class="preview-body" id="preview-body">
-            <p class="preview-empty">Start typing to see preview…</p>
+            <p class="preview-empty">Start typing to see a preview…</p>
           </div>
         </div>
       </div>
     </div>
+
   </main>
 
   <!-- New Project Modal -->
   <div class="modal-overlay hidden" id="project-modal">
     <div class="modal">
       <div class="modal-head">
-        <h2>New Project</h2>
+        <h2>New project</h2>
         <button class="modal-close" id="project-modal-close">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
@@ -136,22 +135,21 @@
       <div class="modal-body">
         <div class="field">
           <label>Project name</label>
-          <input type="text" id="p-name" placeholder="e.g. My SaaS App" />
+          <input type="text" id="p-name" placeholder="e.g. My SaaS App"/>
         </div>
         <div class="field">
           <label>Description <span class="label-hint">optional</span></label>
-          <input type="text" id="p-desc" placeholder="A short description shown on the public page" />
+          <input type="text" id="p-desc" placeholder="Short description shown on the public page"/>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn-ghost" id="project-modal-cancel">Cancel</button>
-        <button class="btn-primary" id="project-modal-save">Create Project</button>
+        <button class="btn-primary" id="project-modal-save">Create</button>
       </div>
     </div>
   </div>
 
   <div class="toast hidden" id="toast"></div>
-
   <script src="/js/app.js"></script>
 </body>
 </html>

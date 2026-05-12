@@ -3,105 +3,127 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Changelog Builder — Ship beautiful changelogs</title>
+  <title>Changelog — Ship beautiful release notes</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400;1,9..144,700&family=Outfit:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --purple:#7c3aed;--purple-lt:#f5f3ff;--purple-md:#ede9fe;
-      --purple-dk:#5b21b6;--purple-vivid:#8b5cf6;
-      --ink:#18161a;--ink2:#3f3a44;--muted:#7c7585;--faint:#c4bfca;
-      --border:#e8e3f0;--bg:#fdfcff;--white:#ffffff;
-      --font:'Geist',sans-serif;--display:'Instrument Serif',serif;--mono:'Geist Mono',monospace;
+      --purple:#6d28d9;--purple-lt:#f5f3ff;--purple-md:#ede9fe;
+      --purple-dk:#4c1d95;--purple-vv:#7c3aed;
+      --ink:#110f14;--ink2:#3b3645;--muted:#7a7189;--faint:#c0bac9;
+      --border:#e6e1f0;--bg:#fefcff;--white:#fff;
+      --font:'Outfit',sans-serif;
+      --display:'Fraunces',serif;
+      --mono:'JetBrains Mono',monospace;
     }
     html{scroll-behavior:smooth}
     body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-    /* NAV */
-    nav{display:flex;align-items:center;justify-content:space-between;padding:18px 56px;border-bottom:1px solid var(--border);background:rgba(253,252,255,0.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
-    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-    .nav-logo-mark{width:32px;height:32px;background:var(--purple);border-radius:8px;display:flex;align-items:center;justify-content:center}
-    .nav-logo-mark svg{width:16px;height:16px;color:#fff}
-    .nav-logo-text{font-family:var(--display);font-size:19px;font-style:italic;color:var(--ink);letter-spacing:-0.01em}
-    .nav-links{display:flex;align-items:center;gap:4px}
-    .nav-link{padding:7px 14px;color:var(--ink2);font-size:14px;text-decoration:none;border-radius:7px;transition:background 0.15s}
-    .nav-link:hover{background:var(--purple-lt)}
-    .nav-cta{padding:8px 18px;background:var(--purple);color:#fff;font-size:14px;font-weight:500;border-radius:8px;text-decoration:none;margin-left:8px;transition:opacity 0.15s,transform 0.15s}
-    .nav-cta:hover{opacity:0.88;transform:translateY(-1px)}
+    /* ── NAV ── */
+    nav{display:flex;align-items:center;justify-content:space-between;padding:16px 52px;border-bottom:1px solid var(--border);background:rgba(254,252,255,0.93);backdrop-filter:blur(14px);position:sticky;top:0;z-index:50}
+    .nav-brand{display:flex;align-items:center;gap:11px;text-decoration:none}
+    .nav-brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--purple-vv),var(--purple-dk));border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:18px;font-weight:700;color:#fff;font-style:italic}
+    .nav-brand-name{font-family:var(--display);font-size:20px;font-weight:700;font-style:italic;color:var(--ink);letter-spacing:-0.02em}
+    .nav-brand-dot{display:inline-block;width:5px;height:5px;background:var(--purple-vv);border-radius:50%;margin-left:2px;vertical-align:super}
+    .nav-center{display:flex;align-items:center;gap:2px;position:absolute;left:50%;transform:translateX(-50%)}
+    .nav-link{padding:6px 14px;color:var(--muted);font-size:14px;font-weight:400;text-decoration:none;border-radius:7px;transition:color 0.15s,background 0.15s}
+    .nav-link:hover{color:var(--ink);background:var(--purple-lt)}
+    .nav-right{display:flex;align-items:center;gap:8px}
+    .nav-gh{display:flex;align-items:center;gap:6px;padding:7px 14px;color:var(--ink2);font-size:13px;text-decoration:none;border:1px solid var(--border);border-radius:8px;transition:border-color 0.15s,background 0.15s}
+    .nav-gh:hover{border-color:var(--purple);background:var(--purple-lt)}
+    .nav-open{padding:8px 18px;background:var(--purple);color:#fff;font-size:14px;font-weight:500;border-radius:8px;text-decoration:none;font-family:var(--font);transition:opacity 0.15s,transform 0.15s}
+    .nav-open:hover{opacity:0.88;transform:translateY(-1px)}
 
-    /* HERO */
-    .hero{padding:100px 56px 72px;max-width:860px;margin:0 auto;text-align:center;animation:up 0.5s ease both}
-    .hero-pill{display:inline-flex;align-items:center;gap:7px;background:var(--purple-md);border:1px solid #d8d0f8;color:var(--purple-dk);font-size:12px;font-weight:500;padding:5px 14px;border-radius:20px;margin-bottom:32px;letter-spacing:0.03em}
-    .hero-pill-dot{width:5px;height:5px;background:var(--purple);border-radius:50%;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-    h1{font-family:var(--display);font-size:clamp(48px,6.5vw,78px);font-weight:400;line-height:1.06;letter-spacing:-0.02em;color:var(--ink);margin-bottom:24px}
-    h1 em{font-style:italic;color:var(--purple)}
+    /* ── HERO ── */
+    .hero{padding:104px 52px 68px;max-width:900px;margin:0 auto;text-align:center;animation:up 0.5s ease both}
+    .hero-tag{display:inline-flex;align-items:center;gap:7px;background:var(--purple-md);border:1px solid #d8b4fe;color:var(--purple-dk);font-size:11px;font-weight:500;padding:5px 14px;border-radius:20px;margin-bottom:30px;letter-spacing:0.05em;text-transform:uppercase}
+    .tag-pulse{width:5px;height:5px;background:var(--purple-vv);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
+    h1{font-family:var(--display);font-size:clamp(50px,6.5vw,80px);font-weight:700;font-style:italic;line-height:1.04;letter-spacing:-0.03em;color:var(--ink);margin-bottom:22px}
+    h1 span{color:var(--purple-vv);font-style:normal}
     .hero-sub{font-size:18px;color:var(--muted);font-weight:300;max-width:500px;margin:0 auto 40px;line-height:1.7}
-    .hero-actions{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-    .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--purple);color:#fff;font-family:var(--font);font-size:15px;font-weight:500;border-radius:9px;text-decoration:none;border:none;cursor:pointer;transition:transform 0.15s,opacity 0.15s}
-    .btn-primary:hover{opacity:0.88;transform:translateY(-1px)}
-    .btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;background:transparent;color:var(--ink);font-family:var(--font);font-size:15px;border-radius:9px;text-decoration:none;border:1.5px solid var(--border);cursor:pointer;transition:border-color 0.15s,background 0.15s}
-    .btn-ghost:hover{border-color:var(--purple);background:var(--purple-lt)}
-    .hero-note{margin-top:24px;font-size:12px;color:var(--faint);letter-spacing:0.04em;text-transform:uppercase}
+    .hero-ctas{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+    .btn-cta{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--purple);color:#fff;font-family:var(--font);font-size:15px;font-weight:500;border-radius:9px;text-decoration:none;border:none;cursor:pointer;transition:transform 0.15s,opacity 0.15s}
+    .btn-cta:hover{opacity:0.88;transform:translateY(-1px)}
+    .btn-outline{display:inline-flex;align-items:center;gap:8px;padding:14px 24px;background:transparent;color:var(--ink2);font-family:var(--font);font-size:15px;border-radius:9px;text-decoration:none;border:1.5px solid var(--border);transition:border-color 0.15s,background 0.15s}
+    .btn-outline:hover{border-color:var(--purple);background:var(--purple-lt)}
+    .hero-sub-note{margin-top:22px;font-size:11px;color:var(--faint);letter-spacing:0.06em;text-transform:uppercase}
 
-    /* SAMPLE CHANGELOG STRIP */
-    .sample{padding:0 40px 80px;max-width:860px;margin:0 auto;animation:up 0.5s 0.1s ease both;opacity:0;animation-fill-mode:forwards}
-    .sample-frame{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 2px 0 var(--border),0 16px 48px rgba(124,58,237,0.07)}
-    .sample-topbar{display:flex;align-items:center;gap:7px;padding:13px 18px;background:var(--purple-lt);border-bottom:1px solid var(--border)}
-    .sdot{width:10px;height:10px;border-radius:50%}
-    .sdot.r{background:#fca5a5}.sdot.y{background:#fcd34d}.sdot.g{background:#86efac}
-    .sample-url{flex:1;background:var(--white);border:1px solid var(--border);border-radius:5px;padding:4px 12px;font-family:var(--mono);font-size:11px;color:var(--muted);max-width:260px;margin:0 auto;text-align:center}
-    .sample-body{padding:40px 48px}
-    .sample-header{margin-bottom:36px;padding-bottom:24px;border-bottom:1px solid var(--border)}
-    .sample-pill{display:inline-flex;align-items:center;gap:6px;background:var(--purple-md);color:var(--purple-dk);font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
-    .sample-pill-dot{width:4px;height:4px;background:var(--purple);border-radius:50%}
-    .sample-title{font-family:var(--display);font-size:36px;font-style:italic;color:var(--ink);margin-bottom:6px;letter-spacing:-0.01em}
-    .sample-desc{font-size:14px;color:var(--muted)}
-    .sample-entry{padding:28px 0}
-    .sample-entry-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-    .s-version{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--purple-dk);background:var(--purple-lt);border:1px solid var(--purple-md);border-radius:5px;padding:2px 9px}
-    .s-type{font-size:10px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;border-radius:20px;padding:2px 9px}
-    .s-type.major{background:#f5f3ff;color:#5b21b6}
-    .s-type.patch{background:#faf5ff;color:#7c3aed}
-    .s-date{font-size:11px;color:var(--faint);margin-left:auto}
-    .s-entry-title{font-family:var(--display);font-size:22px;font-style:italic;color:var(--ink);margin-bottom:8px;letter-spacing:-0.01em}
-    .s-entry-body{font-size:13px;color:var(--ink2);line-height:1.7}
-    .s-entry-body code{font-family:var(--mono);font-size:12px;background:var(--purple-lt);color:var(--purple-dk);border-radius:4px;padding:1px 5px}
-    .s-divider{height:1px;background:var(--border)}
+    /* ── CHANGELOG PREVIEW ── */
+    .preview-wrap{padding:0 36px 80px;max-width:900px;margin:0 auto;animation:up 0.5s 0.12s ease both;opacity:0;animation-fill-mode:forwards}
+    .chrome{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 2px 0 var(--border),0 20px 60px rgba(109,40,217,0.08)}
+    .chrome-bar{display:flex;align-items:center;gap:7px;padding:12px 18px;background:var(--purple-lt);border-bottom:1px solid var(--border)}
+    .c-dot{width:10px;height:10px;border-radius:50%}
+    .c-dot.r{background:#fca5a5}.c-dot.y{background:#fde68a}.c-dot.g{background:#86efac}
+    .chrome-url{flex:1;background:var(--white);border:1px solid var(--border);border-radius:5px;padding:4px 14px;font-family:var(--mono);font-size:11px;color:var(--muted);max-width:260px;margin:0 auto;text-align:center}
 
-    /* FEATURES */
-    .features{padding:88px 56px;max-width:1020px;margin:0 auto}
-    .section-eye{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple);margin-bottom:10px}
-    .section-title{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-style:italic;color:var(--ink);line-height:1.1;letter-spacing:-0.02em;margin-bottom:48px}
+    .cl-body{display:flex}
+    .cl-sidebar{width:200px;background:var(--purple-lt);border-right:1px solid var(--border);padding:20px 14px;flex-shrink:0}
+    .cl-sb-brand{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+    .cl-sb-icon{width:26px;height:26px;background:var(--purple);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:13px;color:#fff;font-style:italic;font-weight:700}
+    .cl-sb-name{font-family:var(--display);font-size:15px;font-style:italic;color:var(--ink);font-weight:700}
+    .cl-sb-label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--faint);padding:0 6px;margin-bottom:5px}
+    .cl-sb-item{display:flex;align-items:center;gap:7px;padding:7px 8px;border-radius:6px;font-size:12px;color:var(--muted);margin-bottom:2px}
+    .cl-sb-item.active{background:var(--purple-md);color:var(--purple-dk);font-weight:500}
+    .cl-sb-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:0.5}
+    .cl-sb-ct{margin-left:auto;font-size:10px;background:rgba(109,40,217,0.12);color:var(--purple-dk);border-radius:8px;padding:1px 6px}
+    .cl-sb-btn{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:auto;padding:8px;background:var(--purple);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:500;font-family:var(--font);width:100%;margin-top:14px}
+
+    .cl-main{flex:1;display:flex;flex-direction:column}
+    .cl-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--border);background:var(--white)}
+    .cl-topbar-title{font-family:var(--display);font-size:15px;font-style:italic;color:var(--ink);font-weight:700}
+    .cl-topbar-r{display:flex;gap:7px;align-items:center}
+    .cl-share{display:flex;align-items:center;gap:5px;padding:6px 11px;background:var(--purple-lt);border:1px solid var(--purple-md);border-radius:6px;color:var(--purple-dk);font-size:11px;font-weight:500}
+    .cl-add{padding:6px 11px;background:var(--purple);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:500;font-family:var(--font)}
+
+    .cl-entries{padding:12px 16px;display:flex;flex-direction:column;gap:8px;height:240px;overflow:hidden}
+    .cl-entry{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px;border-left:3px solid var(--purple)}
+    .cl-entry.draft{border-left-color:var(--faint)}
+    .cl-entry-meta{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+    .cl-ver{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--purple-dk);background:var(--purple-lt);border-radius:4px;padding:2px 7px}
+    .cl-type{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;border-radius:10px;padding:2px 7px}
+    .cl-type.major{background:#f5f3ff;color:#4c1d95}
+    .cl-type.patch{background:#faf5ff;color:#6d28d9}
+    .cl-status{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:0.05em;border-radius:10px;padding:2px 7px}
+    .cl-status.pub{background:#ecfdf5;color:#059669}
+    .cl-status.draft{background:var(--bg);color:var(--faint);border:1px solid var(--border)}
+    .cl-date{font-size:10px;color:var(--faint);margin-left:auto}
+    .cl-entry-title{font-family:var(--display);font-size:13px;font-style:italic;color:var(--ink);margin-bottom:3px}
+    .cl-entry-preview{font-size:11px;color:var(--muted)}
+
+    /* ── FEATURES ── */
+    .features{padding:88px 52px;max-width:1040px;margin:0 auto}
+    .s-eye{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-vv);margin-bottom:10px}
+    .s-title{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-style:italic;font-weight:700;color:var(--ink);line-height:1.1;letter-spacing:-0.02em;margin-bottom:48px}
     .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-    .feat-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:12px;transition:transform 0.18s,border-color 0.18s,box-shadow 0.18s}
-    .feat-card:hover{transform:translateY(-3px);border-color:#d8d0f8;box-shadow:0 8px 24px rgba(124,58,237,0.08)}
+    .feat-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:11px;transition:transform 0.18s,border-color 0.18s,box-shadow 0.18s}
+    .feat-card:hover{transform:translateY(-3px);border-color:#c4b5fd;box-shadow:0 8px 28px rgba(109,40,217,0.08)}
     .feat-icon{width:42px;height:42px;border-radius:10px;background:var(--purple-lt);display:flex;align-items:center;justify-content:center;font-size:18px}
-    .feat-title{font-size:15px;font-weight:500;color:var(--ink)}
+    .feat-title{font-size:14px;font-weight:500;color:var(--ink)}
     .feat-desc{font-size:13px;color:var(--muted);line-height:1.65}
 
-    /* HOW */
-    .how{background:var(--ink);padding:88px 56px}
-    .how-inner{max-width:900px;margin:0 auto}
-    .how-eye{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-vivid);margin-bottom:10px}
-    .how-title{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-style:italic;color:#fdfcff;line-height:1.1;letter-spacing:-0.02em;margin-bottom:48px}
+    /* ── HOW ── */
+    .how{background:var(--ink);padding:88px 52px}
+    .how-inner{max-width:920px;margin:0 auto}
+    .how-eye{font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:10px}
+    .how-title{font-family:var(--display);font-size:clamp(32px,4vw,48px);font-style:italic;font-weight:700;color:#fefcff;line-height:1.1;letter-spacing:-0.02em;margin-bottom:48px}
     .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
-    .step-n{font-family:var(--display);font-size:48px;font-style:italic;color:rgba(255,255,255,0.07);line-height:1;margin-bottom:10px}
-    .step-bar{width:28px;height:2px;background:var(--purple-vivid);margin-bottom:14px}
-    .step-title{font-size:15px;font-weight:500;color:#fdfcff;margin-bottom:7px}
-    .step-desc{font-size:13px;color:rgba(253,252,255,0.42);line-height:1.7}
-    .code-pill{display:inline-flex;align-items:center;margin-top:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 13px;font-family:var(--mono);font-size:12px;color:rgba(253,252,255,0.6)}
+    .step-n{font-family:var(--display);font-size:52px;font-style:italic;font-weight:700;color:rgba(255,255,255,0.06);line-height:1;margin-bottom:10px}
+    .step-bar{width:28px;height:2px;background:#7c3aed;margin-bottom:14px}
+    .step-title{font-size:14px;font-weight:500;color:#fefcff;margin-bottom:7px}
+    .step-desc{font-size:13px;color:rgba(254,252,255,0.4);line-height:1.7}
+    .code-chip{display:inline-flex;margin-top:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:12px;color:rgba(254,252,255,0.6)}
 
-    /* CTA */
-    .cta{padding:96px 56px;text-align:center;border-top:1px solid var(--border)}
+    /* ── CTA ── */
+    .cta{padding:96px 52px;text-align:center;border-top:1px solid var(--border)}
     .cta-inner{max-width:520px;margin:0 auto}
-    .cta-title{font-family:var(--display);font-size:clamp(34px,4vw,54px);font-style:italic;color:var(--ink);letter-spacing:-0.02em;line-height:1.08;margin-bottom:14px}
+    .cta-title{font-family:var(--display);font-size:clamp(34px,4vw,54px);font-style:italic;font-weight:700;color:var(--ink);letter-spacing:-0.025em;line-height:1.06;margin-bottom:14px}
     .cta-sub{font-size:17px;color:var(--muted);font-weight:300;margin-bottom:34px;line-height:1.65}
-    .cta-note{margin-top:16px;font-size:12px;color:var(--faint);letter-spacing:0.04em;text-transform:uppercase}
+    .cta-note{margin-top:16px;font-size:11px;color:var(--faint);letter-spacing:0.05em;text-transform:uppercase}
 
-    footer{padding:26px 56px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-    .footer-logo{font-family:var(--display);font-size:16px;font-style:italic;color:var(--ink)}
+    footer{padding:26px 52px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .footer-brand{font-family:var(--display);font-size:16px;font-style:italic;font-weight:700;color:var(--ink)}
     .footer-note{font-size:12px;color:var(--faint)}
 
     @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
@@ -110,104 +132,126 @@
 <body>
 
 <nav>
-  <a class="nav-logo" href="/">
-    <div class="nav-logo-mark">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-    </div>
-    <span class="nav-logo-text">Changelog</span>
+  <a class="nav-brand" href="/">
+    <div class="nav-brand-icon">cl</div>
+    <span class="nav-brand-name">changelog<span class="nav-brand-dot"></span></span>
   </a>
-  <div class="nav-links">
+  <div class="nav-center">
     <a class="nav-link" href="#features">Features</a>
     <a class="nav-link" href="#how">Deploy</a>
     <a class="nav-link" href="https://github.com" target="_blank">GitHub</a>
-    <a class="nav-cta" href="/app">Open App →</a>
+  </div>
+  <div class="nav-right">
+    <a class="nav-gh" href="https://github.com" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      GitHub
+    </a>
+    <a class="nav-open" href="/app">Open app →</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-pill"><span class="hero-pill-dot"></span>Ship with confidence</div>
-  <h1>Beautiful changelogs,<br><em>effortlessly.</em></h1>
-  <p class="hero-sub">Write markdown entries, publish with one click, share a permanent public URL with your users.</p>
-  <div class="hero-actions">
-    <a class="btn-primary" href="/app">Start writing →</a>
-    <a class="btn-ghost" href="https://github.com" target="_blank">View on GitHub</a>
+  <div class="hero-tag"><span class="tag-pulse"></span>Ship with clarity</div>
+  <h1>Release notes your<br>users will <span>actually read.</span></h1>
+  <p class="hero-sub">Write in markdown, publish in one click, share a beautiful permanent URL. No clutter, no noise.</p>
+  <div class="hero-ctas">
+    <a class="btn-cta" href="/app">Start writing →</a>
+    <a class="btn-outline" href="https://github.com" target="_blank">View source</a>
   </div>
-  <p class="hero-note">Open source · Vercel + Turso · Free forever</p>
+  <p class="hero-sub-note">Open source · Self-hosted · Free forever</p>
 </section>
 
-<div class="sample">
-  <div class="sample-frame">
-    <div class="sample-topbar">
-      <div class="sdot r"></div><div class="sdot y"></div><div class="sdot g"></div>
-      <div class="sample-url">yourapp.vercel.app/p/my-project</div>
+<div class="preview-wrap">
+  <div class="chrome">
+    <div class="chrome-bar">
+      <div class="c-dot r"></div><div class="c-dot y"></div><div class="c-dot g"></div>
+      <div class="chrome-url">yourapp.vercel.app/app</div>
     </div>
-    <div class="sample-body">
-      <div class="sample-header">
-        <div class="sample-pill"><span class="sample-pill-dot"></span>Changelog</div>
-        <div class="sample-title">My Project</div>
-        <div class="sample-desc">A running log of everything shipped.</div>
-      </div>
-      <div class="sample-entry">
-        <div class="sample-entry-meta">
-          <span class="s-version">v2.0.0</span>
-          <span class="s-type major">Major</span>
-          <span class="s-date">12 May 2025</span>
+    <div class="cl-body">
+      <aside class="cl-sidebar">
+        <div class="cl-sb-brand">
+          <div class="cl-sb-icon">cl</div>
+          <span class="cl-sb-name">changelog</span>
         </div>
-        <div class="s-entry-title">Complete dashboard redesign</div>
-        <div class="s-entry-body">Rebuilt the entire UI from the ground up. New <code>sidebar</code> navigation, improved search, and a much faster load time across all views.</div>
-      </div>
-      <div class="s-divider"></div>
-      <div class="sample-entry">
-        <div class="sample-entry-meta">
-          <span class="s-version">v1.4.2</span>
-          <span class="s-type patch">Patch</span>
-          <span class="s-date">28 Apr 2025</span>
+        <p class="cl-sb-label">Projects</p>
+        <div class="cl-sb-item active"><span class="cl-sb-dot"></span>My SaaS App<span class="cl-sb-ct">3</span></div>
+        <div class="cl-sb-item"><span class="cl-sb-dot"></span>Mobile SDK</div>
+        <div class="cl-sb-item"><span class="cl-sb-dot"></span>API v2</div>
+        <button class="cl-sb-btn">+ New Project</button>
+      </aside>
+      <main class="cl-main">
+        <div class="cl-topbar">
+          <span class="cl-topbar-title">My SaaS App</span>
+          <div class="cl-topbar-r">
+            <span class="cl-share">↗ Public page</span>
+            <button class="cl-add">+ New Entry</button>
+          </div>
         </div>
-        <div class="s-entry-title">Fix webhook retry logic</div>
-        <div class="s-entry-body">Corrected exponential backoff timing that was causing duplicate deliveries on slow endpoints.</div>
-      </div>
+        <div class="cl-entries">
+          <div class="cl-entry">
+            <div class="cl-entry-meta">
+              <span class="cl-ver">v2.0.0</span>
+              <span class="cl-type major">Major</span>
+              <span class="cl-status pub">Published</span>
+              <span class="cl-date">12 May 2025</span>
+            </div>
+            <div class="cl-entry-title">Complete dashboard redesign</div>
+            <div class="cl-entry-preview">Rebuilt the entire UI from scratch — new sidebar, faster search…</div>
+          </div>
+          <div class="cl-entry draft">
+            <div class="cl-entry-meta">
+              <span class="cl-ver">v2.1.0</span>
+              <span class="cl-type patch">Patch</span>
+              <span class="cl-status draft">Draft</span>
+              <span class="cl-date">Today</span>
+            </div>
+            <div class="cl-entry-title">Fix webhook retry logic</div>
+            <div class="cl-entry-preview">Corrected exponential backoff timing on slow endpoints…</div>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 </div>
 
 <section class="features" id="features">
-  <p class="section-eye">Features</p>
-  <h2 class="section-title">Everything a changelog needs.</h2>
+  <p class="s-eye">Features</p>
+  <h2 class="s-title">Built for teams who ship fast.</h2>
   <div class="feat-grid">
-    <div class="feat-card"><div class="feat-icon">✍️</div><div class="feat-title">Markdown editor</div><p class="feat-desc">Write entries in full markdown — headings, code blocks, lists, links. Live preview in the editor.</p></div>
-    <div class="feat-card"><div class="feat-icon">🔗</div><div class="feat-title">Public shareable URL</div><p class="feat-desc">Every project gets a permanent URL at <code style="font-size:11px;background:var(--purple-lt);color:var(--purple-dk);border-radius:4px;padding:1px 5px">/p/your-project</code>. Share it anywhere.</p></div>
-    <div class="feat-card"><div class="feat-icon">📦</div><div class="feat-title">Multi-project</div><p class="feat-desc">Manage as many projects as you need. Each has its own entries, slug, and public page.</p></div>
-    <div class="feat-card"><div class="feat-icon">🏷</div><div class="feat-title">Release types</div><p class="feat-desc">Tag each entry as Major, Minor, Patch, or Fix. Styled differently on the public page.</p></div>
-    <div class="feat-card"><div class="feat-icon">📤</div><div class="feat-title">Publish control</div><p class="feat-desc">Draft your entry privately, publish when ready. Unpublish any time — it disappears from the public page instantly.</p></div>
-    <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">Server-rendered public pages</div><p class="feat-desc">Public changelogs are rendered on the server — fast, SEO-friendly, no JS needed to view.</p></div>
+    <div class="feat-card"><div class="feat-icon">✍️</div><div class="feat-title">Markdown editor with live preview</div><p class="feat-desc">Full markdown support — headings, lists, code blocks, links. See exactly how it'll look as you type.</p></div>
+    <div class="feat-card"><div class="feat-icon">🔗</div><div class="feat-title">Shareable public URL</div><p class="feat-desc">Every project gets a permanent URL at <code style="font-size:11px;background:var(--purple-lt);color:var(--purple-dk);border-radius:3px;padding:1px 5px">/p/slug</code>. Share with users, embed in docs.</p></div>
+    <div class="feat-card"><div class="feat-icon">📦</div><div class="feat-title">Unlimited projects</div><p class="feat-desc">One app, many products. Each project has its own entries, slug, and fully independent public page.</p></div>
+    <div class="feat-card"><div class="feat-icon">🏷</div><div class="feat-title">Release type labels</div><p class="feat-desc">Tag entries as Major, Minor, Patch, or Fix. Each renders with distinct styling on the public page.</p></div>
+    <div class="feat-card"><div class="feat-icon">📤</div><div class="feat-title">Draft before you publish</div><p class="feat-desc">Write privately, publish when ready. Unpublish any time — gone from the public page instantly.</p></div>
+    <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">Server-rendered public pages</div><p class="feat-desc">Public changelogs render on the server — blazing fast, SEO-indexed, zero JS required to read.</p></div>
   </div>
 </section>
 
 <section class="how" id="how">
   <div class="how-inner">
     <p class="how-eye">How it works</p>
-    <h2 class="how-title">Ship your first changelog<br>in minutes.</h2>
+    <h2 class="how-title">First changelog live<br>in under 10 minutes.</h2>
     <div class="steps">
       <div>
         <div class="step-n">01</div>
         <div class="step-bar"></div>
-        <div class="step-title">Create a project</div>
-        <p class="step-desc">Give it a name and description. A unique public URL slug is generated automatically.</p>
-        <div class="code-pill">+ New Project</div>
+        <div class="step-title">Clone & install</div>
+        <p class="step-desc">Download, run npm install. Zero build step — plain HTML, CSS, and serverless functions.</p>
+        <div class="code-chip">npm install</div>
       </div>
       <div>
         <div class="step-n">02</div>
         <div class="step-bar"></div>
-        <div class="step-title">Write entries</div>
-        <p class="step-desc">Add version numbers, release types, and write your notes in markdown. Save as draft until ready.</p>
-        <div class="code-pill">v2.0.0 — Major release</div>
+        <div class="step-title">Connect Turso</div>
+        <p class="step-desc">Create a free Turso database, paste the URL and token into Vercel env vars. Schema bootstraps itself.</p>
+        <div class="code-chip">TURSO_URL + TOKEN</div>
       </div>
       <div>
         <div class="step-n">03</div>
         <div class="step-bar"></div>
-        <div class="step-title">Publish & share</div>
-        <p class="step-desc">Hit publish. Your entry is live on the public page instantly. Copy the URL and share with your users.</p>
-        <div class="code-pill">/p/my-project</div>
+        <div class="step-title">Push & deploy</div>
+        <p class="step-desc">Push to GitHub, connect Vercel, done. Every git push triggers a redeploy automatically.</p>
+        <div class="code-chip">git push → live</div>
       </div>
     </div>
   </div>
@@ -216,18 +260,18 @@
 <section class="cta">
   <div class="cta-inner">
     <h2 class="cta-title">Start shipping<br>better changelogs.</h2>
-    <p class="cta-sub">Self-hosted, open source, free forever. Your data, your infrastructure.</p>
-    <div class="hero-actions">
-      <a class="btn-primary" href="/app">Open App →</a>
-      <a class="btn-ghost" href="https://github.com" target="_blank">Read the docs</a>
+    <p class="cta-sub">Open source, self-hosted, free forever. Your data, your infra.</p>
+    <div class="hero-ctas">
+      <a class="btn-cta" href="/app">Open app →</a>
+      <a class="btn-outline" href="https://github.com" target="_blank">Read docs</a>
     </div>
-    <p class="cta-note">MIT License · No accounts · Deploy in 5 min</p>
+    <p class="cta-note">MIT License · No accounts needed · Deploy in minutes</p>
   </div>
 </section>
 
 <footer>
-  <span class="footer-logo">Changelog</span>
-  <span class="footer-note">Built with Vercel + Turso · Open source</span>
+  <span class="footer-brand">changelog.</span>
+  <span class="footer-note">Vercel + Turso · Open source · MIT</span>
 </footer>
 
 </body>

@@ -1,28 +1,25 @@
 // ── State ──────────────────────────────────────────────
-let projects    = [];
+let projects       = [];
 let currentProject = null;
 let currentEntries = [];
-let editingEntryId = null;
 
-// ── Views ───────────────────────────────────────────────
 function showView(id) {
-  ['view-home','view-project','view-editor'].forEach(v => {
-    document.getElementById(v).classList.toggle('hidden', v !== id);
-  });
+  ['view-home','view-project','view-editor'].forEach(v =>
+    document.getElementById(v).classList.toggle('hidden', v !== id)
+  );
 }
 
-// ── Boot ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadProjects();
   bindGlobalEvents();
 });
 
-// ── Projects ─────────────────────────────────────────────
+// ── Projects ──────────────────────────────────────────────
 async function loadProjects() {
   try {
-    const res = await fetch('/api/projects');
+    const res  = await fetch('/api/projects');
     const data = await res.json();
-    projects = data.projects || [];
+    projects   = data.projects || [];
     renderProjectGrid();
     renderSidebar();
   } catch {
@@ -44,17 +41,7 @@ function renderSidebar() {
 
 function renderProjectGrid() {
   const grid = document.getElementById('project-grid');
-  if (!projects.length) {
-    grid.innerHTML = `
-      <div class="project-card project-card-empty" onclick="document.getElementById('new-project-btn').click()">
-        <div class="project-card-empty-inner">
-          <div class="project-card-empty-icon">📝</div>
-          <div class="project-card-empty-label">Create your first project</div>
-        </div>
-      </div>`;
-    return;
-  }
-  grid.innerHTML = projects.map(p => `
+  const cards = projects.map(p => `
     <div class="project-card" onclick="openProject(${p.id})">
       <div class="project-card-name">${esc(p.name)}</div>
       ${p.description ? `<div class="project-card-desc">${esc(p.description)}</div>` : ''}
@@ -63,19 +50,23 @@ function renderProjectGrid() {
           <span class="pcount"><strong>${p.entry_count || 0}</strong> entries</span>
           <span class="pcount"><strong>${p.published_count || 0}</strong> published</span>
         </div>
-        <span class="project-card-slug">/p/${p.slug}</span>
+        <span class="project-card-slug">/p/${esc(p.slug)}</span>
       </div>
     </div>
-  `).join('') + `
+  `).join('');
+
+  const addCard = `
     <div class="project-card project-card-empty" onclick="document.getElementById('new-project-btn').click()">
       <div class="project-card-empty-inner">
-        <div class="project-card-empty-icon">+</div>
-        <div class="project-card-empty-label">New project</div>
+        <div class="project-card-empty-icon">${projects.length ? '+' : '📝'}</div>
+        <div class="project-card-empty-label">${projects.length ? 'New project' : 'Create your first project'}</div>
       </div>
     </div>`;
+
+  grid.innerHTML = cards + addCard;
 }
 
-// ── Open Project ─────────────────────────────────────────
+// ── Open Project ──────────────────────────────────────────
 async function openProject(id) {
   currentProject = projects.find(p => p.id == id);
   if (!currentProject) return;
@@ -91,7 +82,7 @@ async function loadEntries(projectId) {
   const el = document.getElementById('entries-list');
   el.innerHTML = '<div class="state-msg">Loading entries…</div>';
   try {
-    const res = await fetch(`/api/projects/${projectId}`);
+    const res  = await fetch(`/api/projects/${projectId}`);
     const data = await res.json();
     currentEntries = data.entries || [];
     renderEntries();
@@ -103,7 +94,7 @@ async function loadEntries(projectId) {
 function renderEntries() {
   const el = document.getElementById('entries-list');
   if (!currentEntries.length) {
-    el.innerHTML = `<div class="state-msg">No entries yet — <button style="background:none;border:none;color:var(--purple);cursor:pointer;font-size:14px" onclick="openEditor()">create the first one →</button></div>`;
+    el.innerHTML = `<div class="state-msg">No entries yet — <button style="background:none;border:none;color:var(--purple);cursor:pointer;font-size:14px;font-family:var(--font)" onclick="openEditor()">create the first one →</button></div>`;
     return;
   }
   el.innerHTML = currentEntries.map(e => `
@@ -116,10 +107,10 @@ function renderEntries() {
           <span class="entry-date">${fmtDate(e.created_at)}</span>
         </div>
         <div class="entry-title">${esc(e.title)}</div>
-        <div class="entry-preview">${esc(e.body).substring(0, 100)}…</div>
+        <div class="entry-preview">${esc((e.body || '').substring(0, 100))}…</div>
       </div>
       <div class="entry-item-actions">
-        <button class="entry-publish-btn ${e.published ? 'unpublish' : 'publish'}" onclick="togglePublish(${e.id}, ${e.published})">
+        <button class="entry-publish-btn ${e.published ? 'unpublish' : 'publish'}" onclick="togglePublish(${e.id}, ${e.published ? 1 : 0})">
           ${e.published ? 'Unpublish' : 'Publish'}
         </button>
         <button class="entry-action-btn" title="Edit" onclick="openEditor(${e.id})">
@@ -133,47 +124,44 @@ function renderEntries() {
   `).join('');
 }
 
-// ── Publish toggle ───────────────────────────────────────
+// ── Publish / Delete ──────────────────────────────────────
 async function togglePublish(id, isPublished) {
   await fetch(`/api/entries/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ published: !isPublished }),
   });
-  showToast(isPublished ? 'Entry unpublished' : 'Entry published!', 'success');
+  showToast(isPublished ? 'Unpublished' : 'Published!', 'success');
   await loadEntries(currentProject.id);
   await loadProjects();
 }
 window.togglePublish = togglePublish;
 
-// ── Delete entry ─────────────────────────────────────────
 async function deleteEntry(id) {
-  if (!confirm('Delete this entry? This cannot be undone.')) return;
+  if (!confirm('Delete this entry?')) return;
   await fetch(`/api/entries/${id}`, { method: 'DELETE' });
-  showToast('Entry deleted', 'success');
+  showToast('Deleted', 'success');
   await loadEntries(currentProject.id);
   await loadProjects();
 }
 window.deleteEntry = deleteEntry;
 
-// ── Editor ───────────────────────────────────────────────
+// ── Editor ────────────────────────────────────────────────
 function openEditor(entryId) {
-  editingEntryId = entryId || null;
   const entry = entryId ? currentEntries.find(e => e.id == entryId) : null;
-
-  document.getElementById('editor-title').textContent = entry ? 'Edit Entry' : 'New Entry';
+  document.getElementById('editor-title').textContent      = entry ? 'Edit Entry' : 'New Entry';
   document.getElementById('editor-back-label').textContent = currentProject?.name || 'Back';
   document.getElementById('e-version').value = entry?.version || '';
   document.getElementById('e-type').value    = entry?.type    || 'minor';
   document.getElementById('e-title').value   = entry?.title   || '';
   document.getElementById('e-body').value    = entry?.body    || '';
   document.getElementById('e-id').value      = entry?.id      || '';
-
   updatePreview();
   showView('view-editor');
 }
 window.openEditor = openEditor;
 
+// ── Live Preview ──────────────────────────────────────────
 function updatePreview() {
   const version = document.getElementById('e-version').value;
   const type    = document.getElementById('e-type').value;
@@ -182,37 +170,70 @@ function updatePreview() {
   const el      = document.getElementById('preview-body');
 
   if (!title && !body) {
-    el.innerHTML = '<p class="preview-empty">Start typing to see preview…</p>';
+    el.innerHTML = '<p class="preview-empty">Start typing to see a preview…</p>';
     return;
   }
 
   el.innerHTML = `
     <div class="preview-entry-meta">
       ${version ? `<span class="preview-version">v${esc(version)}</span>` : ''}
-      ${type    ? `<span class="preview-type">${type}</span>` : ''}
+      ${type    ? `<span class="preview-type">${esc(type)}</span>` : ''}
     </div>
     ${title ? `<div class="preview-title">${esc(title)}</div>` : ''}
     <div class="preview-content">${renderMd(body)}</div>
   `;
 }
 
-function renderMd(text) {
-  if (!text) return '';
-  return text
-    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^\- (.+)$/gm, '<li>$1</li>')
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
-    .replace(/\n\n+/g, '</p><p>')
-    .replace(/^(?!<[hulpoceh])(.+)/, '<p>$1')
-    + (text.match(/\n\n/) ? '</p>' : '');
+// ── Markdown Renderer (line-by-line, no broken regex) ─────
+function renderMd(raw) {
+  if (!raw) return '';
+  const lines  = raw.split('\n');
+  const out    = [];
+  let inPre    = false;
+  let preLines = [];
+  let inUl     = false;
+
+  const closeUl = () => { if (inUl) { out.push('</ul>'); inUl = false; } };
+
+  for (const line of lines) {
+    if (line.startsWith('```')) {
+      closeUl();
+      if (!inPre) { inPre = true; preLines = []; }
+      else { out.push(`<pre><code>${esc(preLines.join('\n'))}</code></pre>`); inPre = false; }
+      continue;
+    }
+    if (inPre) { preLines.push(line); continue; }
+
+    if (line.startsWith('### ')) { closeUl(); out.push(`<h3>${inline(line.slice(4))}</h3>`); continue; }
+    if (line.startsWith('## '))  { closeUl(); out.push(`<h2>${inline(line.slice(3))}</h2>`); continue; }
+    if (line.startsWith('# '))   { closeUl(); out.push(`<h1>${inline(line.slice(2))}</h1>`); continue; }
+
+    if (line.match(/^[-*] /)) {
+      if (!inUl) { out.push('<ul>'); inUl = true; }
+      out.push(`<li>${inline(line.slice(2))}</li>`);
+      continue;
+    }
+
+    closeUl();
+
+    if (line.trim() === '') { out.push('<div style="height:8px"></div>'); continue; }
+
+    out.push(`<p>${inline(line)}</p>`);
+  }
+  closeUl();
+  return out.join('');
 }
 
+function inline(text) {
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/`([^`]+)`/g,     '<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>');
+}
+
+// ── Save ──────────────────────────────────────────────────
 async function saveEntry(publish) {
   const version = document.getElementById('e-version').value.trim();
   const type    = document.getElementById('e-type').value;
@@ -230,10 +251,10 @@ async function saveEntry(publish) {
       await fetch(`/api/entries/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ version, type, title, body, ...(publish !== undefined ? { published: publish } : {}) }),
+        body: JSON.stringify({ version, type, title, body, published: publish }),
       });
     } else {
-      const res = await fetch('/api/entries', {
+      const res  = await fetch('/api/entries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ project_id: currentProject.id, version, type, title, body }),
@@ -247,38 +268,36 @@ async function saveEntry(publish) {
         });
       }
     }
-    showToast(publish ? 'Entry published!' : 'Draft saved', 'success');
+    showToast(publish ? 'Published!' : 'Draft saved', 'success');
     await loadEntries(currentProject.id);
     await loadProjects();
     showView('view-project');
-  } catch { showToast('Failed to save entry', 'error'); }
+  } catch { showToast('Failed to save', 'error'); }
 }
 
-// ── Bind Events ──────────────────────────────────────────
+// ── Bind Events ───────────────────────────────────────────
 function bindGlobalEvents() {
-  // Nav
-  document.getElementById('back-btn').onclick = () => { showView('view-home'); currentProject = null; renderSidebar(); };
+  document.getElementById('back-btn').onclick        = () => { showView('view-home'); currentProject = null; renderSidebar(); };
   document.getElementById('editor-back-btn').onclick = () => showView('view-project');
-  document.getElementById('new-entry-btn').onclick = () => openEditor();
-
-  // Editor
-  document.getElementById('e-version').addEventListener('input', updatePreview);
-  document.getElementById('e-type').addEventListener('change', updatePreview);
-  document.getElementById('e-title').addEventListener('input', updatePreview);
-  document.getElementById('e-body').addEventListener('input', updatePreview);
+  document.getElementById('new-entry-btn').onclick   = () => openEditor();
   document.getElementById('editor-save-draft').onclick = () => saveEntry(false);
   document.getElementById('editor-publish').onclick    = () => saveEntry(true);
 
-  // New project modal
-  document.getElementById('new-project-btn').onclick        = () => document.getElementById('project-modal').classList.remove('hidden');
-  document.getElementById('project-modal-close').onclick    = () => document.getElementById('project-modal').classList.add('hidden');
-  document.getElementById('project-modal-cancel').onclick   = () => document.getElementById('project-modal').classList.add('hidden');
-  document.getElementById('project-modal').addEventListener('click', e => { if (e.target === document.getElementById('project-modal')) document.getElementById('project-modal').classList.add('hidden'); });
+  ['e-version','e-title','e-body'].forEach(id =>
+    document.getElementById(id).addEventListener('input', updatePreview)
+  );
+  document.getElementById('e-type').addEventListener('change', updatePreview);
+
+  const modal = document.getElementById('project-modal');
+  document.getElementById('new-project-btn').onclick      = () => modal.classList.remove('hidden');
+  document.getElementById('project-modal-close').onclick  = () => modal.classList.add('hidden');
+  document.getElementById('project-modal-cancel').onclick = () => modal.classList.add('hidden');
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
 
   document.getElementById('project-modal-save').onclick = async () => {
     const name = document.getElementById('p-name').value.trim();
     const desc = document.getElementById('p-desc').value.trim();
-    if (!name) { showToast('Project name is required', 'error'); return; }
+    if (!name) { showToast('Name required', 'error'); return; }
     try {
       await fetch('/api/projects', {
         method: 'POST',
@@ -287,19 +306,22 @@ function bindGlobalEvents() {
       });
       document.getElementById('p-name').value = '';
       document.getElementById('p-desc').value = '';
-      document.getElementById('project-modal').classList.add('hidden');
+      modal.classList.add('hidden');
       showToast('Project created!', 'success');
       await loadProjects();
-    } catch { showToast('Failed to create project', 'error'); }
+    } catch { showToast('Failed to create', 'error'); }
   };
 
-  // Enter key in modal
-  document.getElementById('p-name').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('project-modal-save').click(); });
+  document.getElementById('p-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('project-modal-save').click();
+  });
 }
 
-// ── Utils ────────────────────────────────────────────────
+// ── Utils ─────────────────────────────────────────────────
 function esc(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function fmtDate(iso) {
@@ -308,10 +330,10 @@ function fmtDate(iso) {
 }
 
 let toastTimer;
-function showToast(msg, type='') {
+function showToast(msg, type = '') {
   clearTimeout(toastTimer);
-  const t = document.getElementById('toast');
+  const t       = document.getElementById('toast');
   t.textContent = msg;
-  t.className = `toast ${type}`;
-  toastTimer = setTimeout(() => t.classList.add('hidden'), 3200);
+  t.className   = `toast ${type}`;
+  toastTimer    = setTimeout(() => t.classList.add('hidden'), 3200);
 }

@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/app", "destination": "/app.html" },
+    { "source": "/p/:slug", "destination": "/api/public?slug=:slug" },
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ]
+}
